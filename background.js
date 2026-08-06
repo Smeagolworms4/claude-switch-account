@@ -1,10 +1,10 @@
 /**
- * Claude Multi-Compte — service worker.
+ * Claude Switch Account — service worker.
  *
- * Principe : l'authentification claude.ai repose sur des cookies (sessionKey & co).
- * On prend un "instantané" de tous les cookies du domaine, on le range dans
- * chrome.storage.local sous un profil, et basculer = purger les cookies courants
- * puis réinjecter ceux du profil cible.
+ * How it works: claude.ai authentication lives in cookies (sessionKey chief
+ * among them). We snapshot every cookie for the domain into a profile stored in
+ * chrome.storage.local; switching means clearing the current jar and restoring
+ * the target profile's cookies.
  */
 
 const t = (key, ...subs) => chrome.i18n.getMessage(key, subs.map(String)) || key;
@@ -81,11 +81,11 @@ async function writeCookies(cookies) {
       storeId: cookie.storeId
     };
 
-    // Un cookie "hostOnly" ne doit pas recevoir de champ domain, sinon Chrome
-    // le transforme en cookie de domaine (et l'ancre au mauvais scope).
+    // A hostOnly cookie must not carry a domain field, otherwise Chrome turns
+    // it into a domain cookie and anchors it to the wrong scope.
     if (!cookie.hostOnly) details.domain = cookie.domain;
 
-    // SameSite=None exige secure:true, sinon chrome.cookies.set rejette.
+    // SameSite=None requires secure:true, or chrome.cookies.set rejects it.
     if (cookie.sameSite && cookie.sameSite !== "unspecified") {
       details.sameSite = cookie.sameSite;
       if (cookie.sameSite === "no_restriction") details.secure = true;
@@ -99,14 +99,14 @@ async function writeCookies(cookies) {
     try {
       await chrome.cookies.set(details);
     } catch (err) {
-      console.warn("[CMC] cookie ignoré:", cookie.name, err);
+      console.warn("[CSA] skipped cookie:", cookie.name, err);
     }
   }
 }
 
-/* -------------------------------------------------------------- identité --- */
+/* -------------------------------------------------------------- identity --- */
 
-/** Interroge l'API claude.ai avec les cookies courants pour nommer le profil. */
+/** Queries the claude.ai API with the current cookies to label the profile. */
 async function probeIdentity() {
   const endpoints = [
     "https://claude.ai/api/auth/current_account",
@@ -125,16 +125,16 @@ async function probeIdentity() {
       found.email ||= text.match(/"email_address"\s*:\s*"([^"]+)"/)?.[1] || null;
       found.name ||= text.match(/"full_name"\s*:\s*"([^"]+)"/)?.[1]
         || text.match(/"display_name"\s*:\s*"([^"]+)"/)?.[1] || null;
-      // Le nom d'organisation vit sous "name" dans /api/organizations.
+      // The organization name lives under "name" in /api/organizations.
       found.org ||= text.match(/"name"\s*:\s*"([^"]+)"/)?.[1] || null;
 
       if (found.email && found.name) break;
     } catch {
-      /* endpoint indisponible, on tente le suivant */
+      /* endpoint unavailable, try the next one */
     }
   }
 
-  // Dernier recours : la partie locale de l'e-mail sert de nom lisible.
+  // Last resort: the e-mail local part doubles as a readable name.
   if (!found.name && found.email) found.name = found.email.split("@")[0];
   return found;
 }
@@ -152,7 +152,7 @@ async function snapshotInto(account) {
   return account;
 }
 
-/** Enregistre la session actuellement active comme nouveau profil. */
+/** Saves the currently active session as a new profile. */
 async function addCurrentAccount(label) {
   if (!(await isLoggedIn())) throw new Error(t("errNoSession"));
 
@@ -176,7 +176,7 @@ async function addCurrentAccount(label) {
     savedAt: Date.now()
   };
 
-  // Même e-mail déjà enregistré → on écrase au lieu de dupliquer.
+  // Same e-mail already saved -> overwrite instead of duplicating.
   const existing = account.email
     ? state.accounts.find((a) => a.email && a.email === account.email)
     : null;
@@ -198,13 +198,13 @@ async function addCurrentAccount(label) {
   return state;
 }
 
-/** Bascule vers un profil : on rafraîchit d'abord la session courante. */
+/** Switches to a profile, re-saving the current session first. */
 async function switchTo(id) {
   const state = await getState();
   const target = state.accounts.find((a) => a.id === id);
   if (!target) throw new Error(t("errNotFound"));
 
-  // Le sessionKey tourne : on resauvegarde le compte actif avant de le quitter.
+  // sessionKey rotates, so re-snapshot the active account before leaving it.
   const current = state.accounts.find((a) => a.id === state.activeId);
   if (current && current.id !== id && (await isLoggedIn())) {
     await snapshotInto(current);
@@ -219,7 +219,7 @@ async function switchTo(id) {
   return state;
 }
 
-/** Purge la session sans toucher aux profils enregistrés (pour ajouter un compte). */
+/** Clears the session without touching saved profiles (to add an account). */
 async function startFreshSession() {
   const state = await getState();
   const current = state.accounts.find((a) => a.id === state.activeId);
@@ -297,5 +297,5 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   handler(msg)
     .then((data) => sendResponse({ ok: true, data }))
     .catch((err) => sendResponse({ ok: false, error: err?.message || String(err) }));
-  return true; // réponse asynchrone
+  return true; // async response
 });

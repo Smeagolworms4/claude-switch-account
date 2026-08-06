@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Génère icons/icon{16,48,128}.png (flèches de bascule sur fond Claude).
+"""Generates icons/icon{16,48,128}.png (switch arrows on a dark background).
 
-Usage : python3 tools/make-icons.py   (nécessite Pillow)
+Usage: python3 tools/make-icons.py   (requires Pillow)
 """
 
 from PIL import Image, ImageDraw
@@ -12,14 +12,14 @@ SIZES = (16, 48, 128)
 
 
 def make(size: int) -> None:
-    s = size * 10  # supersampling, puis réduction LANCZOS
+    s = size * 10  # supersample, then downscale with LANCZOS
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     d.rounded_rectangle([0, 0, s - 1, s - 1], radius=s * 0.22, fill=BG)
 
-    # Deux flèches opposées (⇄) : la bascule de compte, lisible dès 16px.
-    bar = s * 0.085   # épaisseur du trait
-    head = s * 0.16   # demi-hauteur de la pointe
+    # Two opposing arrows: the account switch, still readable at 16px.
+    bar = s * 0.085   # stroke thickness
+    head = s * 0.16   # arrowhead half-height
     x0, x1 = s * 0.22, s * 0.78
 
     for y, direction in ((s * 0.37, 1), (s * 0.63, -1)):

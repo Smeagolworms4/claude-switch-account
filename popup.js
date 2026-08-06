@@ -1,4 +1,4 @@
-/* Popup : rendu de la liste des comptes + dispatch vers le service worker. */
+/* Popup: renders the account list and dispatches actions to the service worker. */
 
 const t = (key, ...subs) => chrome.i18n.getMessage(key, subs.map(String)) || key;
 
@@ -9,7 +9,7 @@ const statusEl = $("status");
 
 let busy = false;
 
-/** Remplit le HTML statique depuis _locales/. */
+/** Fills the static HTML from _locales/. */
 function localizeDom() {
   document.documentElement.lang = chrome.i18n.getUILanguage();
   for (const el of document.querySelectorAll("[data-i18n]")) {
@@ -130,7 +130,7 @@ function render(state) {
   }
 }
 
-/** Enveloppe une action : verrou anti double-clic + rendu + report d'erreur. */
+/** Wraps an action: double-click lock, re-render, error reporting. */
 async function run(action) {
   if (busy) return;
   busy = true;

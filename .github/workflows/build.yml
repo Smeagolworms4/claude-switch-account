@@ -20,13 +20,13 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Valider le manifest et les traductions
+      - name: Validate manifest and translations
         run: |
           node -e '
             const fs = require("fs");
             const m = JSON.parse(fs.readFileSync("manifest.json"));
-            if (m.manifest_version !== 3) throw new Error("manifest_version doit valoir 3");
-            if (!m.default_locale) throw new Error("default_locale manquant");
+            if (m.manifest_version !== 3) throw new Error("manifest_version must be 3");
+            if (!m.default_locale) throw new Error("default_locale is missing");
 
             const locales = fs.readdirSync("_locales");
             const ref = JSON.parse(fs.readFileSync(`_locales/${m.default_locale}/messages.json`));
@@ -36,16 +36,16 @@ jobs:
               const msgs = JSON.parse(fs.readFileSync(`_locales/${loc}/messages.json`));
               const missing = keys.filter((k) => !(k in msgs));
               const extra = Object.keys(msgs).filter((k) => !keys.includes(k));
-              if (missing.length) throw new Error(`${loc}: clés manquantes → ${missing.join(", ")}`);
-              if (extra.length) throw new Error(`${loc}: clés en trop → ${extra.join(", ")}`);
+              if (missing.length) throw new Error(`${loc}: missing keys -> ${missing.join(", ")}`);
+              if (extra.length) throw new Error(`${loc}: unknown keys -> ${extra.join(", ")}`);
             }
-            console.log(`OK — ${keys.length} clés × ${locales.length} langues (${locales.join(", ")})`);
+            console.log(`OK - ${keys.length} keys x ${locales.length} locales (${locales.join(", ")})`);
           '
 
-      - name: Vérifier la syntaxe JS
+      - name: Check JS syntax
         run: for f in background.js popup.js; do node --check "$f"; done
 
-      - name: Aligner la version sur le tag
+      - name: Sync version with tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
@@ -57,10 +57,10 @@ jobs:
           ' "$VERSION"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
-      - name: Construire le zip
+      - name: Build zip
         run: bash tools/build.sh
 
-      - name: Publier l'artefact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: claude-switch-account
@@ -68,7 +68,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-      - name: Créer la release
+      - name: Create release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:

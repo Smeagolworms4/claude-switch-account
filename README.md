@@ -1,125 +1,135 @@
 # Claude Switch Account
 
-Extension navigateur (Manifest V3) pour jongler entre **plusieurs comptes claude.ai** et basculer de l'un à l'autre **en un clic**, sans se déconnecter/reconnecter à chaque fois.
+Browser extension (Manifest V3) to keep **several claude.ai accounts** side by side and switch between them **in one click** — no logging out and back in every time.
 
 [![build](https://github.com/Smeagolworms4/claude-switch-account/actions/workflows/build.yml/badge.svg)](https://github.com/Smeagolworms4/claude-switch-account/actions/workflows/build.yml)
 
-*(English version below — [English](#english))*
+[!["Buy Me A Coffee"](https://raw.githubusercontent.com/Smeagolworms4/donate-assets/master/coffee.png)](https://www.buymeacoffee.com/smeagolworms4)
+[!["Buy Me A Coffee"](https://raw.githubusercontent.com/Smeagolworms4/donate-assets/master/paypal.png)](https://www.paypal.com/donate/?business=SURRPGEXF4YVU&no_recurring=0&item_name=Hello%2C+I%27m+SmeagolWorms4.+For+my+open+source+projects.%0AThanks+you+very+mutch+%21%21%21&currency_code=EUR)
+
+*(Version française plus bas — [Français](#français))*
 
 ---
 
-## Fonctionnement
+## How it works
 
-L'authentification claude.ai repose sur des cookies (`sessionKey` en tête). L'extension :
+claude.ai authentication lives in cookies (`sessionKey` chief among them). The extension:
 
-1. prend un **instantané** de tous les cookies `claude.ai` / `anthropic.com` et le range dans un profil ;
-2. récupère le **nom et l'e-mail** du compte via l'API claude.ai pour l'étiqueter automatiquement ;
-3. au clic sur un autre profil : resauvegarde la session courante (le `sessionKey` tourne), purge les cookies, réinjecte ceux du profil cible, puis recharge les onglets claude.ai ouverts.
+1. **snapshots** every `claude.ai` / `anthropic.com` cookie into a profile;
+2. fetches the account **name and e-mail** from the claude.ai API to label it automatically;
+3. on switching: re-saves the current session (the `sessionKey` rotates), clears the jar, restores the target profile's cookies, then reloads any open claude.ai tab.
 
-Tout reste **en local** dans `chrome.storage.local`. Aucun serveur, aucune télémétrie, aucun mot de passe : uniquement les cookies que votre navigateur possède déjà.
+Everything stays **local** in `chrome.storage.local`. No server, no telemetry, no passwords — only the cookies your browser already holds.
 
-## Installation
+## Install
 
-### Depuis une release
+### From a release
 
-1. Téléchargez le `.zip` depuis [Releases](https://github.com/Smeagolworms4/claude-switch-account/releases) et décompressez-le.
-2. Ouvrez `chrome://extensions` (ou `brave://extensions`, `edge://extensions`).
-3. Activez le **mode développeur**.
-4. **Charger l'extension non empaquetée** → sélectionnez le dossier décompressé.
+1. Download the `.zip` from [Releases](https://github.com/Smeagolworms4/claude-switch-account/releases) and unzip it.
+2. Open `chrome://extensions` (or `brave://extensions`, `edge://extensions`).
+3. Enable **Developer mode**.
+4. **Load unpacked** → pick the unzipped folder.
 
-### Depuis les sources
+### From source
 
 ```bash
 git clone https://github.com/Smeagolworms4/claude-switch-account.git
 cd claude-switch-account
 ```
 
-Puis chargez le dossier directement via **Charger l'extension non empaquetée**. Aucune étape de build n'est nécessaire : le code est du JS natif sans dépendance.
+Then load the folder directly with **Load unpacked**. There is no build step: plain JS, zero dependencies.
 
-## Utilisation
+## Usage
 
-| Action | Effet |
+| Action | Effect |
 | --- | --- |
-| **＋ Enregistrer la session actuelle** | Ajoute le compte connecté à la liste (nom + e-mail détectés automatiquement) |
-| **Clic sur un compte** | Bascule dessus et recharge les onglets claude.ai |
-| **⇥ Nouvelle connexion** | Vide la session sans supprimer les profils — pour ajouter un compte supplémentaire |
-| **↻ Rafraîchir le compte actif** | Resauvegarde les cookies du compte actif (utile après une reconnexion) |
-| **✎ / 🗑** | Renommer / supprimer un profil |
+| **＋ Save current session** | Adds the logged-in account to the list (name + e-mail detected automatically) |
+| **Click an account** | Switches to it and reloads claude.ai tabs |
+| **⇥ New login** | Clears the session without deleting profiles — to add another account |
+| **↻ Refresh active account** | Re-saves the active account's cookies (handy after re-authenticating) |
+| **✎ / 🗑** | Rename / delete a profile |
 
-### Ajouter un deuxième compte
+### Adding a second account
 
-1. Connectez-vous au compte A sur claude.ai → **＋ Enregistrer la session actuelle**.
-2. **⇥ Nouvelle connexion** → connectez-vous au compte B.
-3. **＋ Enregistrer la session actuelle**.
-4. Les deux comptes sont dans la liste : un clic suffit pour basculer.
+1. Log into account A on claude.ai → **＋ Save current session**.
+2. **⇥ New login** → log into account B.
+3. **＋ Save current session**.
+4. Both accounts now sit in the list; one click switches between them.
 
-## Langues
+## Languages
 
-Interface traduite via `chrome.i18n`, sélectionnée automatiquement selon la langue du navigateur :
+UI translated through `chrome.i18n`, auto-selected from the browser language:
 
-🇬🇧 English (défaut) · 🇫🇷 Français · 🇩🇪 Deutsch · 🇪🇸 Español · 🇮🇹 Italiano · 🇵🇹 Português
+🇬🇧 English (default) · 🇫🇷 Français · 🇩🇪 Deutsch · 🇪🇸 Español · 🇮🇹 Italiano · 🇵🇹 Português
 
-Ajouter une langue = créer `_locales/<code>/messages.json` en copiant `_locales/en/messages.json`. La CI vérifie que toutes les langues ont exactement les mêmes clés.
+Adding a language = copy `_locales/en/messages.json` to `_locales/<code>/messages.json`. CI enforces that every locale carries exactly the same keys.
 
-## Développement
+## Development
 
 ```
-manifest.json          # MV3, permissions cookies/storage/tabs
-background.js          # service worker : snapshot / purge / restauration des cookies
-popup.html/.css/.js    # interface de la liste des comptes
-_locales/<lang>/       # traductions
-icons/                 # icônes générées
-tools/build.sh         # produit dist/claude-switch-account-<version>.zip
-tools/make-icons.py    # régénère les icônes (nécessite Pillow)
+manifest.json          # MV3, cookies/storage/tabs permissions
+background.js          # service worker: cookie snapshot / clear / restore
+popup.html/.css/.js    # account list UI
+_locales/<lang>/       # translations
+icons/                 # generated icons
+tools/build.sh         # produces dist/claude-switch-account-<version>.zip
+tools/make-icons.py    # regenerates the icons (needs Pillow)
 ```
 
 ```bash
-bash tools/build.sh          # empaqueter
-python3 tools/make-icons.py  # régénérer les icônes
+bash tools/build.sh          # package
+python3 tools/make-icons.py  # regenerate icons
 ```
 
 ### CI
 
-`.github/workflows/build.yml` sur chaque push, PR et tag :
+`.github/workflows/build.yml` runs on every push, PR and tag:
 
-- valide le manifest et la **parité des clés de traduction** entre toutes les langues ;
-- vérifie la syntaxe JS (`node --check`) ;
-- construit le zip et le publie en **artefact** téléchargeable ;
-- sur un tag `v*` : aligne `manifest.version` sur le tag et crée la **release GitHub** avec le zip.
+- validates the manifest and **translation key parity** across all locales;
+- checks JS syntax (`node --check`);
+- builds the zip and uploads it as a downloadable **artifact**;
+- on a `v*` tag: aligns `manifest.version` with the tag and creates the **GitHub release** with the zip attached.
 
-Publier une version :
+Cutting a release:
 
 ```bash
 git tag v1.0.1 && git push origin v1.0.1
 ```
 
-## Sécurité & limites
+## Security & limitations
 
-- Les cookies de session sont stockés **en clair** dans le stockage local de l'extension — comme dans le jar de cookies du navigateur. Sur une machine partagée, supprimez les profils avant de partir.
-- Un seul compte est actif **par profil navigateur** à un instant donné : c'est une bascule, pas du cloisonnement simultané (pour du simultané, utilisez les profils Chrome ou les conteneurs Firefox).
-- Extension non officielle, sans lien avec Anthropic.
-- Testée sur Chrome / Brave / Edge. Firefox nécessite une variante du manifest (`background.scripts`).
+- Session cookies are stored **in plaintext** in the extension's local storage — same as your browser's cookie jar. On a shared machine, delete the profiles before walking away.
+- Only one account is active **per browser profile** at a time: this is switching, not simultaneous isolation (for that, use Chrome profiles or Firefox containers).
+- Unofficial extension, unaffiliated with Anthropic.
+- Tested on Chrome / Brave / Edge. Firefox needs a manifest variant (`background.scripts`).
 
-## Licence
+## Support
+
+If this saves you time, coffee is appreciated:
+
+[!["Buy Me A Coffee"](https://raw.githubusercontent.com/Smeagolworms4/donate-assets/master/coffee.png)](https://www.buymeacoffee.com/smeagolworms4)
+[!["Buy Me A Coffee"](https://raw.githubusercontent.com/Smeagolworms4/donate-assets/master/paypal.png)](https://www.paypal.com/donate/?business=SURRPGEXF4YVU&no_recurring=0&item_name=Hello%2C+I%27m+SmeagolWorms4.+For+my+open+source+projects.%0AThanks+you+very+mutch+%21%21%21&currency_code=EUR)
+
+## License
 
 MIT
 
 ---
 
-<a name="english"></a>
+<a name="français"></a>
 
-# English
+# Français
 
-Browser extension (Manifest V3) to keep **several claude.ai accounts** side by side and switch between them **in one click**.
+Extension navigateur (Manifest V3) pour jongler entre **plusieurs comptes claude.ai** et basculer de l'un à l'autre **en un clic**.
 
-**How it works.** claude.ai authentication lives in cookies (`sessionKey` first and foremost). The extension snapshots every `claude.ai` / `anthropic.com` cookie into a profile, labels it with the account name and e-mail fetched from the claude.ai API, and on switch: re-saves the current session (the `sessionKey` rotates), clears the jar, restores the target profile's cookies, and reloads open claude.ai tabs. Everything stays local in `chrome.storage.local` — no server, no telemetry, no passwords.
+**Fonctionnement.** L'authentification claude.ai repose sur des cookies (`sessionKey` en tête). L'extension prend un instantané de tous les cookies `claude.ai` / `anthropic.com` dans un profil, l'étiquette avec le nom et l'e-mail récupérés via l'API claude.ai, puis à la bascule : resauvegarde la session courante (le `sessionKey` tourne), purge les cookies, réinjecte ceux du profil cible et recharge les onglets claude.ai ouverts. Tout reste en local dans `chrome.storage.local` — aucun serveur, aucune télémétrie, aucun mot de passe.
 
-**Install.** Grab the `.zip` from [Releases](https://github.com/Smeagolworms4/claude-switch-account/releases), unzip it, then `chrome://extensions` → enable **Developer mode** → **Load unpacked**. Or clone the repo and load the folder as-is; there is no build step.
+**Installation.** Récupérez le `.zip` depuis [Releases](https://github.com/Smeagolworms4/claude-switch-account/releases), décompressez-le, puis `chrome://extensions` → activez le **mode développeur** → **Charger l'extension non empaquetée**. Ou clonez le dépôt et chargez le dossier tel quel : aucune étape de build.
 
-**Usage.** Log into account A → **＋ Save current session**. Then **⇥ New login** → log into account B → **＋ Save current session**. Both now sit in the list; click either one to switch. **↻ Refresh active account** re-saves the current cookies, **✎ / 🗑** rename and delete.
+**Utilisation.** Connectez-vous au compte A → **＋ Enregistrer la session actuelle**. Puis **⇥ Nouvelle connexion** → connectez-vous au compte B → **＋ Enregistrer la session actuelle**. Les deux comptes sont dans la liste, un clic bascule de l'un à l'autre. **↻ Rafraîchir le compte actif** resauvegarde les cookies courants, **✎ / 🗑** renomment et suppriment.
 
-**Languages.** UI auto-selects from the browser language: English (default), French, German, Spanish, Italian, Portuguese. Add one by copying `_locales/en/messages.json` to `_locales/<code>/messages.json` — CI enforces key parity across all locales.
+**Langues.** Interface sélectionnée automatiquement selon la langue du navigateur : anglais (défaut), français, allemand, espagnol, italien, portugais. Pour en ajouter une, copiez `_locales/en/messages.json` vers `_locales/<code>/messages.json` — la CI vérifie la parité des clés entre toutes les langues.
 
-**Caveats.** Session cookies are stored in plaintext in extension storage (same as your browser's cookie jar) — remove profiles on a shared machine. Only one account is active per browser profile at a time: this is switching, not simultaneous isolation. Unofficial, unaffiliated with Anthropic. Tested on Chrome / Brave / Edge.
+**Limites.** Les cookies de session sont stockés en clair dans le stockage de l'extension (comme dans le jar du navigateur) — supprimez les profils sur une machine partagée. Un seul compte est actif par profil navigateur à la fois : c'est une bascule, pas du cloisonnement simultané. Extension non officielle, sans lien avec Anthropic. Testée sur Chrome / Brave / Edge.
 
-MIT licensed.
+Licence MIT.

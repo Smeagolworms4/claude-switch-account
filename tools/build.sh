@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Construit dist/claude-switch-account-<version>.zip prêt à charger / publier.
+# Builds dist/claude-switch-account-<version>.zip, ready to load or publish.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -7,13 +7,13 @@ cd "$(dirname "$0")/.."
 VERSION="${1:-$(node -p "require('./manifest.json').version")}"
 OUT="dist/claude-switch-account-${VERSION}.zip"
 
-# Un manifest v3 sans default_locale casse les __MSG_*__ : on vérifie avant de packager.
+# An MV3 manifest without default_locale breaks every __MSG_*__, so check first.
 node -e '
   const m = require("./manifest.json");
-  if (!m.default_locale) throw new Error("manifest.default_locale manquant");
+  if (!m.default_locale) throw new Error("manifest.default_locale is missing");
   const fs = require("fs");
   for (const l of fs.readdirSync("_locales")) JSON.parse(fs.readFileSync(`_locales/${l}/messages.json`));
-  console.log(`manifest v${m.version} ok — locales: ${fs.readdirSync("_locales").join(", ")}`);
+  console.log(`manifest v${m.version} ok - locales: ${fs.readdirSync("_locales").join(", ")}`);
 '
 
 rm -rf dist
@@ -24,4 +24,4 @@ zip -r -q "$OUT" \
   _locales icons \
   -x '*.DS_Store'
 
-echo "→ $OUT ($(du -h "$OUT" | cut -f1))"
+echo "-> $OUT ($(du -h "$OUT" | cut -f1))"
