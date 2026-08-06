@@ -74,3 +74,46 @@ jobs:
         with:
           files: dist/*.zip
           generate_release_notes: true
+
+  # Publishes to the Chrome Web Store on v* tags. Skipped when the CWS secrets
+  # are not configured, so forks and early tags still build fine.
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: chrome-web-store
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check for Chrome Web Store credentials
+        id: creds
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+        run: |
+          if [ -n "$CWS_CLIENT_ID" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::CWS secrets missing, skipping Chrome Web Store publish"
+          fi
+
+      - name: Download the built package
+        if: steps.creds.outputs.ready == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: claude-switch-account
+          path: dist
+
+      - name: Upload and publish
+        if: steps.creds.outputs.ready == 'true'
+        env:
+          CWS_CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CWS_CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          CWS_REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}
+          CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
+          CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+        run: node tools/publish-cws.mjs dist/*.zip
