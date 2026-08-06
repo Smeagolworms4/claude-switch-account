@@ -7,7 +7,7 @@ Browser extension (Manifest V3) to keep **several claude.ai accounts** side by s
 [!["Buy Me A Coffee"](https://raw.githubusercontent.com/Smeagolworms4/donate-assets/master/coffee.png)](https://www.buymeacoffee.com/smeagolworms4)
 [!["Buy Me A Coffee"](https://raw.githubusercontent.com/Smeagolworms4/donate-assets/master/paypal.png)](https://www.paypal.com/donate/?business=SURRPGEXF4YVU&no_recurring=0&item_name=Hello%2C+I%27m+SmeagolWorms4.+For+my+open+source+projects.%0AThanks+you+very+mutch+%21%21%21&currency_code=EUR)
 
-*(Version française plus bas — [Français](#français))*
+**English** · [Français](README.fr.md)
 
 <p align="center">
   <img src="docs/screenshot.png" alt="The extension popup listing three saved accounts, with the active one highlighted" width="380">
@@ -92,13 +92,16 @@ python3 tools/make-icons.py  # regenerate icons
 - validates the manifest and **translation key parity** across all locales;
 - checks JS syntax (`node --check`);
 - builds the zip and uploads it as a downloadable **artifact**;
-- on a `v*` tag: aligns `manifest.version` with the tag and creates the **GitHub release** with the zip attached.
+- on a `v*` tag: aligns `manifest.version` with the tag, creates the **GitHub release** with the zip attached, then publishes to the Chrome Web Store.
 
 Cutting a release:
 
 ```bash
 git tag v1.0.1 && git push origin v1.0.1
 ```
+
+The one-time setup for automated publishing is documented in
+[docs/PUBLISHING.md](docs/PUBLISHING.md).
 
 ## Security & limitations
 
@@ -117,23 +120,3 @@ If this saves you time, coffee is appreciated:
 ## License
 
 MIT
-
----
-
-<a name="français"></a>
-
-# Français
-
-Extension navigateur (Manifest V3) pour jongler entre **plusieurs comptes claude.ai** et basculer de l'un à l'autre **en un clic**.
-
-**Fonctionnement.** L'authentification claude.ai repose sur des cookies (`sessionKey` en tête). L'extension prend un instantané de tous les cookies `claude.ai` / `anthropic.com` dans un profil, l'étiquette avec le nom et l'e-mail récupérés via l'API claude.ai, puis à la bascule : resauvegarde la session courante (le `sessionKey` tourne), purge les cookies, réinjecte ceux du profil cible et recharge les onglets claude.ai ouverts. Tout reste en local dans `chrome.storage.local` — aucun serveur, aucune télémétrie, aucun mot de passe.
-
-**Installation.** Récupérez le `.zip` depuis [Releases](https://github.com/Smeagolworms4/claude-switch-account/releases), décompressez-le, puis `chrome://extensions` → activez le **mode développeur** → **Charger l'extension non empaquetée**. Ou clonez le dépôt et chargez le dossier tel quel : aucune étape de build.
-
-**Utilisation.** Connectez-vous au compte A → **＋ Enregistrer la session actuelle**. Puis **⇥ Nouvelle connexion** → connectez-vous au compte B → **＋ Enregistrer la session actuelle**. Les deux comptes sont dans la liste, un clic bascule de l'un à l'autre. **↻ Rafraîchir le compte actif** resauvegarde les cookies courants, **✎ / 🗑** renomment et suppriment.
-
-**Langues.** Interface sélectionnée automatiquement selon la langue du navigateur : anglais (défaut), français, allemand, espagnol, italien, portugais. Pour en ajouter une, copiez `_locales/en/messages.json` vers `_locales/<code>/messages.json` — la CI vérifie la parité des clés entre toutes les langues.
-
-**Limites.** Les cookies de session sont stockés en clair dans le stockage de l'extension (comme dans le jar du navigateur) — supprimez les profils sur une machine partagée. Un seul compte est actif par profil navigateur à la fois : c'est une bascule, pas du cloisonnement simultané. Extension non officielle, sans lien avec Anthropic. Testée sur Chrome / Brave / Edge.
-
-Licence MIT.
