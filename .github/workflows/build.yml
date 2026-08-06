@@ -162,7 +162,7 @@ jobs:
         run: |
           npx --yes web-ext@latest sign --source-dir unpacked \
             --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET" \
-            --channel listed --no-input
+            --channel listed --no-input --amo-metadata amo-metadata.json
         env:
           AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
