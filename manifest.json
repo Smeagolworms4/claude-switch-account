@@ -16,7 +16,21 @@
   ],
   "background": {
     "service_worker": "background.js",
-    "type": "module"
+    "type": "module",
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "claude-switch-account@smeagolworms4",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
   },
   "action": {
     "default_popup": "popup.html",
