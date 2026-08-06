@@ -1,0 +1,76 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Valider le manifest et les traductions
+        run: |
+          node -e '
+            const fs = require("fs");
+            const m = JSON.parse(fs.readFileSync("manifest.json"));
+            if (m.manifest_version !== 3) throw new Error("manifest_version doit valoir 3");
+            if (!m.default_locale) throw new Error("default_locale manquant");
+
+            const locales = fs.readdirSync("_locales");
+            const ref = JSON.parse(fs.readFileSync(`_locales/${m.default_locale}/messages.json`));
+            const keys = Object.keys(ref);
+
+            for (const loc of locales) {
+              const msgs = JSON.parse(fs.readFileSync(`_locales/${loc}/messages.json`));
+              const missing = keys.filter((k) => !(k in msgs));
+              const extra = Object.keys(msgs).filter((k) => !keys.includes(k));
+              if (missing.length) throw new Error(`${loc}: clés manquantes → ${missing.join(", ")}`);
+              if (extra.length) throw new Error(`${loc}: clés en trop → ${extra.join(", ")}`);
+            }
+            console.log(`OK — ${keys.length} clés × ${locales.length} langues (${locales.join(", ")})`);
+          '
+
+      - name: Vérifier la syntaxe JS
+        run: for f in background.js popup.js; do node --check "$f"; done
+
+      - name: Aligner la version sur le tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e '
+            const fs = require("fs");
+            const m = JSON.parse(fs.readFileSync("manifest.json"));
+            m.version = process.argv[1];
+            fs.writeFileSync("manifest.json", JSON.stringify(m, null, 2) + "\n");
+          ' "$VERSION"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Construire le zip
+        run: bash tools/build.sh
+
+      - name: Publier l'artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-switch-account
+          path: dist/*.zip
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Créer la release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true

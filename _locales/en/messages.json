@@ -1,0 +1,64 @@
+{
+  "extName": {
+    "message": "Claude Multi-Account",
+    "description": "Extension name"
+  },
+  "extDesc": {
+    "message": "Save several claude.ai sessions and switch accounts in one click."
+  },
+
+  "appTitle": { "message": "Claude Multi-Account" },
+  "openClaude": { "message": "Open claude.ai" },
+
+  "emptyTitle": { "message": "No account saved yet." },
+  "emptyHint": { "message": "Log in to claude.ai, then click “Save current session”." },
+
+  "btnAdd": { "message": "＋ Save current session" },
+  "btnRefresh": { "message": "↻ Refresh active account" },
+  "btnFresh": { "message": "⇥ New login" },
+
+  "badgeActive": { "message": "active" },
+  "titleActive": { "message": "Active account" },
+  "titleSwitch": {
+    "message": "Switch to $NAME$",
+    "placeholders": { "name": { "content": "$1" } }
+  },
+  "titleRename": { "message": "Rename" },
+  "titleRemove": { "message": "Remove" },
+
+  "savedOn": {
+    "message": "saved on $DATE$",
+    "placeholders": { "date": { "content": "$1" } }
+  },
+
+  "promptRename": { "message": "Account name:" },
+  "confirmRemove": {
+    "message": "Remove “$NAME$”? The saved session will be lost.",
+    "placeholders": { "name": { "content": "$1" } }
+  },
+
+  "okSaved": { "message": "Session saved." },
+  "okRefreshed": { "message": "Active account updated." },
+  "okFresh": { "message": "Session cleared: log in with another account, then save it." },
+  "okSwitched": {
+    "message": "Switched to “$NAME$”",
+    "placeholders": { "name": { "content": "$1" } }
+  },
+
+  "warnNoSession": { "message": "No active claude.ai session — click an account to sign back in." },
+
+  "errNoSession": { "message": "No active claude.ai session. Log in on claude.ai first." },
+  "errNotFound": { "message": "Account not found." },
+  "errNoActive": { "message": "No active account to refresh." },
+  "errNothingToSave": { "message": "No active session to save." },
+  "errUnknownAction": {
+    "message": "Unknown action: $ACTION$",
+    "placeholders": { "action": { "content": "$1" } }
+  },
+  "errUnknown": { "message": "Unknown error" },
+
+  "defaultAccountName": {
+    "message": "Account $N$",
+    "placeholders": { "n": { "content": "$1" } }
+  }
+}

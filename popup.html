@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Claude Multi-Account</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1 data-i18n="appTitle"></h1>
+      <button id="open-claude" class="ghost" data-i18n-title="openClaude">↗</button>
+    </header>
+
+    <div id="status" class="status" hidden></div>
+
+    <ul id="list" class="list"></ul>
+
+    <p id="empty" class="empty" hidden>
+      <b data-i18n="emptyTitle"></b><br />
+      <span data-i18n="emptyHint"></span>
+    </p>
+
+    <footer>
+      <button id="add" class="primary" data-i18n="btnAdd"></button>
+      <div class="row">
+        <button id="refresh" class="ghost small" data-i18n="btnRefresh"></button>
+        <button id="fresh" class="ghost small" data-i18n="btnFresh"></button>
+      </div>
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
