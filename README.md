@@ -9,6 +9,10 @@ Browser extension (Manifest V3) to keep **several claude.ai accounts** side by s
 
 *(Version française plus bas — [Français](#français))*
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="The extension popup listing three saved accounts, with the active one highlighted" width="380">
+</p>
+
 ---
 
 ## How it works

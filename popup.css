@@ -12,7 +12,7 @@
 * { box-sizing: border-box; }
 
 body {
-  width: 330px;
+  width: 360px;
   margin: 0;
   padding: 12px;
   background: var(--bg);
@@ -193,4 +193,11 @@ button:disabled { opacity: 0.5; cursor: default; }
 
 .ghost:hover:not(:disabled) { color: var(--text); border-color: #565350; }
 
-.small { font-size: 11.5px; padding: 6px 8px; }
+/* Longer locales (fr/de/es) overflow these two buttons: keep them on one line. */
+.small {
+  font-size: 11px;
+  padding: 6px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
