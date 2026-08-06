@@ -1,64 +1,120 @@
 {
   "extName": {
-    "message": "Claude Multicuenta",
+    "message": "Account Switcher for Claude",
     "description": "Nombre de la extensión"
   },
   "extDesc": {
     "message": "Guarda varias sesiones de claude.ai y cambia de cuenta con un clic."
   },
-
-  "appTitle": { "message": "Claude Multicuenta" },
-  "openClaude": { "message": "Abrir claude.ai" },
-
-  "emptyTitle": { "message": "No hay ninguna cuenta guardada." },
-  "emptyHint": { "message": "Inicia sesión en claude.ai y luego haz clic en «Guardar la sesión actual»." },
-
-  "btnAdd": { "message": "＋ Guardar la sesión actual" },
-  "btnRefresh": { "message": "↻ Actualizar la cuenta activa" },
-  "btnFresh": { "message": "⇥ Nuevo inicio de sesión" },
-
-  "badgeActive": { "message": "activa" },
-  "titleActive": { "message": "Cuenta activa" },
+  "appTitle": {
+    "message": "Account Switcher for Claude"
+  },
+  "openClaude": {
+    "message": "Abrir claude.ai"
+  },
+  "emptyTitle": {
+    "message": "No hay ninguna cuenta guardada."
+  },
+  "emptyHint": {
+    "message": "Inicia sesión en claude.ai y luego haz clic en «Guardar la sesión actual»."
+  },
+  "btnAdd": {
+    "message": "＋ Guardar la sesión actual"
+  },
+  "btnRefresh": {
+    "message": "↻ Actualizar la cuenta activa"
+  },
+  "btnFresh": {
+    "message": "⇥ Nuevo inicio de sesión"
+  },
+  "badgeActive": {
+    "message": "activa"
+  },
+  "titleActive": {
+    "message": "Cuenta activa"
+  },
   "titleSwitch": {
     "message": "Cambiar a $NAME$",
-    "placeholders": { "name": { "content": "$1" } }
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
   },
-  "titleRename": { "message": "Renombrar" },
-  "titleRemove": { "message": "Eliminar" },
-
+  "titleRename": {
+    "message": "Renombrar"
+  },
+  "titleRemove": {
+    "message": "Eliminar"
+  },
   "savedOn": {
     "message": "guardada el $DATE$",
-    "placeholders": { "date": { "content": "$1" } }
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
   },
-
-  "promptRename": { "message": "Nombre de la cuenta:" },
+  "promptRename": {
+    "message": "Nombre de la cuenta:"
+  },
   "confirmRemove": {
     "message": "¿Eliminar «$NAME$»? Se perderá la sesión guardada.",
-    "placeholders": { "name": { "content": "$1" } }
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
   },
-
-  "okSaved": { "message": "Sesión guardada." },
-  "okRefreshed": { "message": "Cuenta activa actualizada." },
-  "okFresh": { "message": "Sesión vaciada: inicia sesión con otra cuenta y luego guárdala." },
+  "okSaved": {
+    "message": "Sesión guardada."
+  },
+  "okRefreshed": {
+    "message": "Cuenta activa actualizada."
+  },
+  "okFresh": {
+    "message": "Sesión vaciada: inicia sesión con otra cuenta y luego guárdala."
+  },
   "okSwitched": {
     "message": "Cambiado a «$NAME$»",
-    "placeholders": { "name": { "content": "$1" } }
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
   },
-
-  "warnNoSession": { "message": "No hay sesión activa en claude.ai — haz clic en una cuenta para volver a entrar." },
-
-  "errNoSession": { "message": "No hay sesión activa en claude.ai. Inicia sesión primero en claude.ai." },
-  "errNotFound": { "message": "Cuenta no encontrada." },
-  "errNoActive": { "message": "No hay cuenta activa que actualizar." },
-  "errNothingToSave": { "message": "No hay sesión activa que guardar." },
+  "warnNoSession": {
+    "message": "No hay sesión activa en claude.ai — haz clic en una cuenta para volver a entrar."
+  },
+  "errNoSession": {
+    "message": "No hay sesión activa en claude.ai. Inicia sesión primero en claude.ai."
+  },
+  "errNotFound": {
+    "message": "Cuenta no encontrada."
+  },
+  "errNoActive": {
+    "message": "No hay cuenta activa que actualizar."
+  },
+  "errNothingToSave": {
+    "message": "No hay sesión activa que guardar."
+  },
   "errUnknownAction": {
     "message": "Acción desconocida: $ACTION$",
-    "placeholders": { "action": { "content": "$1" } }
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      }
+    }
   },
-  "errUnknown": { "message": "Error desconocido" },
-
+  "errUnknown": {
+    "message": "Error desconocido"
+  },
   "defaultAccountName": {
     "message": "Cuenta $N$",
-    "placeholders": { "n": { "content": "$1" } }
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
   }
 }
