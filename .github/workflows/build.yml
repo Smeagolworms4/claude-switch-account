@@ -117,3 +117,52 @@ jobs:
           CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
           CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
         run: node tools/publish-cws.mjs dist/*.zip
+
+  # Publishes the same package to addons.mozilla.org. Independent of the Chrome
+  # job so one store failing does not hold back the other.
+  publish-firefox:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: addons-mozilla
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check for AMO credentials
+        id: creds
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+        run: |
+          if [ -n "$AMO_JWT_ISSUER" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::AMO secrets missing, skipping Firefox publish"
+          fi
+
+      - name: Download the built package
+        if: steps.creds.outputs.ready == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: claude-switch-account
+          path: dist
+
+      - name: Lint for Firefox
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          mkdir -p unpacked && unzip -q dist/*.zip -d unpacked
+          npx --yes web-ext@latest lint --source-dir unpacked
+
+      - name: Sign and publish on AMO
+        if: steps.creds.outputs.ready == 'true'
+        run: |
+          npx --yes web-ext@latest sign --source-dir unpacked \
+            --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET" \
+            --channel listed --no-input
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
