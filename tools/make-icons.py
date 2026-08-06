@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 
 BG = (31, 30, 29, 255)    # #1f1e1d
 FG = (217, 119, 87, 255)  # #d97757
-SIZES = (16, 48, 128)
+SIZES = (16, 32, 48, 64, 96, 128)
 
 
 def make(size: int) -> None:
