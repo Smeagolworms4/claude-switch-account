@@ -87,24 +87,35 @@ async function upload(token) {
   return result;
 }
 
-/** The upload is asynchronous: poll until the store finishes ingesting it. */
-async function waitForUpload(token, attempts = 30) {
+/**
+ * Best-effort wait for the store to finish ingesting the package.
+ *
+ * fetchStatus is unreliable: it can keep omitting lastAsyncUploadState long
+ * after the upload call itself returned SUCCEEDED and the package is visible
+ * in the console. So this only ever *fails* on an explicit FAILED state — an
+ * absent or stuck IN_PROGRESS state is reported and we go ahead and publish,
+ * letting the publish call be the real verdict.
+ */
+async function waitForUpload(token, attempts = 18) {
   for (let i = 0; i < attempts; i++) {
     const res = await fetch(`${API}/v2/${NAME}:fetchStatus`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    if (!res.ok) fail(`fetchStatus failed: ${await readError(res)}`);
+    if (!res.ok) {
+      console.log(`  fetchStatus unavailable (${res.status}), continuing`);
+      return null;
+    }
 
     const status = await res.json();
     const state = status.lastAsyncUploadState;
 
     if (state === "SUCCEEDED") return status;
-    if (state === "FAILED" || state === "NOT_FOUND") {
-      fail(`upload state ${state}: ${JSON.stringify(status)}`);
-    }
+    if (state === "FAILED") fail(`upload FAILED: ${JSON.stringify(status)}`);
+
     await sleep(10_000);
   }
-  fail("upload still IN_PROGRESS after 5 minutes");
+  console.log("⚠ fetchStatus never confirmed ingestion — publishing anyway");
+  return null;
 }
 
 async function publish(token) {
@@ -137,7 +148,7 @@ const uploaded = await upload(token);
 console.log(`  uploadState=${uploaded.uploadState} version=${uploaded.crxVersion ?? "?"}`);
 
 const status = await waitForUpload(token);
-if (status.warned) {
+if (status?.warned) {
   console.log("⚠ the store flagged warnings on this revision");
 }
 
