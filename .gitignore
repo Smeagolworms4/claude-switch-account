@@ -1,5 +1,6 @@
-# Never commit OAuth credentials — these grant publish rights on the store.
+# Never commit publishing credentials — these grant publish rights on the stores.
 googlauth/
+mozauth/
 *client_secret*.json
 *.secret
 .env
