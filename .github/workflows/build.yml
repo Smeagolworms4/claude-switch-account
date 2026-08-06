@@ -160,9 +160,13 @@ jobs:
       - name: Sign and publish on AMO
         if: steps.creds.outputs.ready == 'true'
         run: |
+          # --approval-timeout 0: return once the upload is accepted instead of
+          # blocking until a human reviews it, which takes hours to days and
+          # would sit here until the runner is killed.
           npx --yes web-ext@latest sign --source-dir unpacked \
             --api-key "$AMO_JWT_ISSUER" --api-secret "$AMO_JWT_SECRET" \
-            --channel listed --no-input --amo-metadata amo-metadata.json
+            --channel listed --no-input --amo-metadata amo-metadata.json \
+            --approval-timeout 0
         env:
           AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
           AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
