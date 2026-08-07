@@ -151,14 +151,31 @@ jobs:
           name: claude-switch-account
           path: dist
 
-      - name: Lint for Firefox
+      # The two stores drift, so this version may already be on AMO while Chrome
+      # still needs it. AMO rejects duplicate versions, so skip rather than fail.
+      - name: Check the version is new to AMO
+        id: amo
         if: steps.creds.outputs.ready == 'true'
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          VERSION="$(node -p "require('./manifest.json').version")"
+          if [ "$(node tools/amo-version-exists.mjs)" = "exists" ]; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::AMO already has $VERSION, skipping Firefox publish"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Lint for Firefox
+        if: steps.amo.outputs.publish == 'true'
         run: |
           mkdir -p unpacked && unzip -q dist/*.zip -d unpacked
           npx --yes web-ext@latest lint --source-dir unpacked
 
       - name: Sign and publish on AMO
-        if: steps.creds.outputs.ready == 'true'
+        if: steps.amo.outputs.publish == 'true'
         run: |
           # --approval-timeout 0: return once the upload is accepted instead of
           # blocking until a human reviews it, which takes hours to days and
