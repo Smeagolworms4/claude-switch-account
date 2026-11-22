@@ -1,0 +1,160 @@
+{
+  "extName": {
+    "message": "Account Switcher for Claude",
+    "description": "Название расширения"
+  },
+  "extDesc": {
+    "message": "Сохраняйте несколько сеансов claude.ai и переключайте аккаунты одним кликом."
+  },
+  "appTitle": {
+    "message": "Account Switcher for Claude"
+  },
+  "openClaude": {
+    "message": "Открыть claude.ai"
+  },
+  "emptyTitle": {
+    "message": "Пока не сохранено ни одного аккаунта."
+  },
+  "emptyHint": {
+    "message": "Войдите на claude.ai, затем нажмите «Сохранить текущий сеанс»."
+  },
+  "btnAdd": {
+    "message": "＋ Сохранить текущий сеанс"
+  },
+  "btnRefresh": {
+    "message": "↻ Обновить аккаунт"
+  },
+  "btnFresh": {
+    "message": "⇥ Новый вход"
+  },
+  "badgeActive": {
+    "message": "активный"
+  },
+  "titleActive": {
+    "message": "Активный аккаунт"
+  },
+  "titleSwitch": {
+    "message": "Переключиться на $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "titleRename": {
+    "message": "Переименовать"
+  },
+  "titleRemove": {
+    "message": "Удалить"
+  },
+  "savedOn": {
+    "message": "сохранено $DATE$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptRename": {
+    "message": "Название аккаунта:"
+  },
+  "confirmRemove": {
+    "message": "Удалить «$NAME$»? Сохранённый сеанс будет потерян.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "okSaved": {
+    "message": "Сеанс сохранён."
+  },
+  "okRefreshed": {
+    "message": "Активный аккаунт обновлён."
+  },
+  "okFresh": {
+    "message": "Сеанс очищен: войдите под другим аккаунтом, затем сохраните его."
+  },
+  "okSwitched": {
+    "message": "Переключено на «$NAME$»",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnNoSession": {
+    "message": "Нет активного сеанса claude.ai — нажмите на аккаунт, чтобы войти снова."
+  },
+  "errNoSession": {
+    "message": "Нет активного сеанса claude.ai. Сначала войдите на claude.ai."
+  },
+  "errNotFound": {
+    "message": "Аккаунт не найден."
+  },
+  "errNoActive": {
+    "message": "Нет активного аккаунта для обновления."
+  },
+  "errNothingToSave": {
+    "message": "Нет активного сеанса для сохранения."
+  },
+  "errUnknownAction": {
+    "message": "Неизвестное действие: $ACTION$",
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      }
+    }
+  },
+  "errUnknown": {
+    "message": "Неизвестная ошибка"
+  },
+  "defaultAccountName": {
+    "message": "Аккаунт $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnImport": {
+    "message": "⇩ Импорт"
+  },
+  "btnExport": {
+    "message": "⇧ Экспорт"
+  },
+  "confirmExport": {
+    "message": "Файл экспорта содержит ваши cookie-файлы сеанса claude.ai в открытом виде. Любой, кто получит файл, сможет войти в эти аккаунты, поэтому храните его в безопасности. Продолжить?"
+  },
+  "okExported": {
+    "message": "Аккаунтов экспортировано: $N$.",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "okImported": {
+    "message": "Импорт завершён — добавлено: $ADDED$, обновлено: $UPDATED$, пропущено: $SKIPPED$.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "updated": {
+        "content": "$2"
+      },
+      "skipped": {
+        "content": "$3"
+      }
+    }
+  },
+  "errImportInvalid": {
+    "message": "Недопустимый файл: это не экспорт этого расширения."
+  },
+  "errNothingToExport": {
+    "message": "Нет сохранённых аккаунтов для экспорта."
+  },
+  "titleDrag": {
+    "message": "Перетащите, чтобы изменить порядок"
+  }
+}

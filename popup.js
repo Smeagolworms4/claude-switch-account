@@ -108,6 +108,13 @@ function render(state) {
     });
 
     actions.append(renameBtn, removeBtn);
+    li.dataset.id = account.id;
+    li.draggable = true;
+    const grip = document.createElement("span");
+    grip.className = "grip";
+    grip.title = t("titleDrag");
+    li.append(grip);
+
     li.append(avatar, info);
 
     if (isActive) {
@@ -181,5 +188,131 @@ $("fresh").addEventListener("click", () =>
 );
 
 $("open-claude").addEventListener("click", () => send("openClaude").then(() => window.close()));
+
+/* ------------------------------------------------------- import / export --- */
+
+const importFileEl = $("import-file");
+const MAX_IMPORT_BYTES = 20 * 1024 * 1024;
+const inTab = location.hash === "#tab";
+// Firefox closes the toolbar popup when a file picker opens, so Import runs in a tab there.
+const needsTabForImport = navigator.userAgent.includes("Firefox/") && !inTab;
+
+if (inTab) document.documentElement.classList.add("in-tab");
+
+function downloadJson(data, filename) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+$("export").addEventListener("click", () =>
+  run(async () => {
+    if (!confirm(t("confirmExport"))) return (await send("getState")).state;
+    const data = await send("exportAccounts");
+    const day = new Date().toISOString().slice(0, 10);
+    downloadJson(data, `claude-switch-account-${day}.json`);
+    notify(t("okExported", data.accounts.length), true);
+    return (await send("getState")).state;
+  })
+);
+
+$("import").addEventListener("click", () => {
+  if (needsTabForImport) {
+    chrome.tabs.create({ url: chrome.runtime.getURL("popup.html#tab") });
+    window.close();
+    return;
+  }
+  importFileEl.click();
+});
+
+importFileEl.addEventListener("change", () =>
+  run(async () => {
+    const file = importFileEl.files?.[0];
+    importFileEl.value = "";
+    if (!file) return (await send("getState")).state;
+
+    let data;
+    try {
+      if (file.size > MAX_IMPORT_BYTES) throw new Error("too large");
+      data = JSON.parse(await file.text());
+    } catch {
+      throw new Error(t("errImportInvalid"));
+    }
+
+    const state = await send("importAccounts", { data });
+    const { added, updated, skipped } = state.importResult;
+    notify(t("okImported", added, updated, skipped), true);
+    return state;
+  })
+);
+
+/* ------------------------------------------------------ drag to reorder --- */
+
+let dragged = null;
+let orderBefore = [];
+
+const currentOrder = () => [...listEl.querySelectorAll(".item")].map((el) => el.dataset.id);
+
+/** The first other item whose vertical midpoint is below the pointer (null = drop at the end). */
+function itemAfter(y) {
+  const others = [...listEl.querySelectorAll(".item:not(.dragging)")];
+  return others.find((el) => {
+    const box = el.getBoundingClientRect();
+    return y < box.top + box.height / 2;
+  }) || null;
+}
+
+listEl.addEventListener("dragstart", (e) => {
+  const item = e.target instanceof Element ? e.target.closest(".item") : null;
+  if (!item || busy) {
+    e.preventDefault();
+    return;
+  }
+  dragged = item;
+  orderBefore = currentOrder();
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", item.dataset.id); // Firefox does not start a drag without data
+  requestAnimationFrame(() => dragged === item && item.classList.add("dragging"));
+});
+
+listEl.addEventListener("dragover", (e) => {
+  if (!dragged) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  const next = itemAfter(e.clientY);
+  if (next) {
+    if (dragged.nextElementSibling !== next) listEl.insertBefore(dragged, next);
+  } else if (listEl.lastElementChild !== dragged) {
+    listEl.append(dragged);
+  }
+});
+
+listEl.addEventListener("drop", (e) => {
+  if (dragged) e.preventDefault();
+});
+
+listEl.addEventListener("dragend", async () => {
+  if (!dragged) return;
+  dragged.classList.remove("dragging");
+  dragged = null;
+
+  const ids = currentOrder();
+  if (ids.join() === orderBefore.join()) return;
+
+  await run(async () => {
+    try {
+      return await send("reorder", { ids });
+    } catch (err) {
+      await load(); // put the list back in sync with what is actually saved
+      throw err;
+    }
+  });
+});
 
 load().catch((err) => notify(err.message));

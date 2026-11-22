@@ -116,5 +116,45 @@
         "content": "$1"
       }
     }
+  },
+  "btnImport": {
+    "message": "⇩ Import"
+  },
+  "btnExport": {
+    "message": "⇧ Export"
+  },
+  "confirmExport": {
+    "message": "The export file contains your claude.ai session cookies in plain text. Anyone who gets the file can sign in to these accounts, so keep it private. Continue?"
+  },
+  "okExported": {
+    "message": "Accounts exported: $N$.",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "okImported": {
+    "message": "Import finished — added: $ADDED$, updated: $UPDATED$, skipped: $SKIPPED$.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "updated": {
+        "content": "$2"
+      },
+      "skipped": {
+        "content": "$3"
+      }
+    }
+  },
+  "errImportInvalid": {
+    "message": "Invalid file: this is not an export from this extension."
+  },
+  "errNothingToExport": {
+    "message": "No saved accounts to export."
+  },
+  "titleDrag": {
+    "message": "Drag to reorder"
   }
 }

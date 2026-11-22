@@ -52,6 +52,8 @@ Puis chargez le dossier directement via **Charger l'extension non empaquetée**.
 | **⇥ Nouvelle connexion** | Vide la session sans supprimer les profils — pour ajouter un compte supplémentaire |
 | **↻ Rafraîchir le compte actif** | Resauvegarde les cookies du compte actif (utile après une reconnexion) |
 | **✎ / 🗑** | Renommer / supprimer un profil |
+| **Glisser un compte** | Réorganise la liste ; l'ordre est enregistré |
+| **⇩ Importer / ⇧ Exporter** | L'export enregistre tous les comptes dans un fichier JSON ; l'import fusionne un tel fichier dans la liste (une session déjà enregistrée n'est remplacée que par une plus récente). Sous Firefox, l'import s'ouvre dans un onglet |
 
 ### Ajouter un deuxième compte
 
@@ -64,7 +66,7 @@ Puis chargez le dossier directement via **Charger l'extension non empaquetée**.
 
 Interface traduite via `chrome.i18n`, sélectionnée automatiquement selon la langue du navigateur :
 
-🇬🇧 English (défaut) · 🇫🇷 Français · 🇩🇪 Deutsch · 🇪🇸 Español · 🇮🇹 Italiano · 🇵🇹 Português
+🇬🇧 English (défaut) · 🇫🇷 Français · 🇩🇪 Deutsch · 🇪🇸 Español · 🇮🇹 Italiano · 🇵🇹 Português · 🇺🇦 Українська · 🇷🇺 Русский
 
 Ajouter une langue = copier `_locales/en/messages.json` vers `_locales/<code>/messages.json`. La CI vérifie que toutes les langues portent exactement les mêmes clés.
 
@@ -105,6 +107,7 @@ La configuration initiale de la publication automatique est décrite dans [docs/
 ## Sécurité & limites
 
 - Les cookies de session sont stockés **en clair** dans le stockage local de l'extension — comme dans le jar de cookies du navigateur. Sur une machine partagée, supprimez les profils avant de partir.
+- Un **fichier d'export contient les cookies de session en clair** et vaut mot de passe pour ces comptes : gardez-le confidentiel et supprimez-le une fois importé.
 - Un seul compte est actif **par profil navigateur** à un instant donné : c'est une bascule, pas du cloisonnement simultané (pour du simultané, utilisez les profils Chrome ou les conteneurs Firefox).
 - Extension non officielle, sans lien avec Anthropic.
 - Testée sur Chrome / Brave / Edge. Firefox nécessite une variante du manifest (`background.scripts`).

@@ -1,0 +1,160 @@
+{
+  "extName": {
+    "message": "Account Switcher for Claude",
+    "description": "Назва розширення"
+  },
+  "extDesc": {
+    "message": "Зберігайте кілька сеансів claude.ai і перемикайте акаунти одним кліком."
+  },
+  "appTitle": {
+    "message": "Account Switcher for Claude"
+  },
+  "openClaude": {
+    "message": "Відкрити claude.ai"
+  },
+  "emptyTitle": {
+    "message": "Жодного акаунта ще не збережено."
+  },
+  "emptyHint": {
+    "message": "Увійдіть на claude.ai, а потім натисніть «Зберегти поточний сеанс»."
+  },
+  "btnAdd": {
+    "message": "＋ Зберегти поточний сеанс"
+  },
+  "btnRefresh": {
+    "message": "↻ Оновити активний акаунт"
+  },
+  "btnFresh": {
+    "message": "⇥ Новий вхід"
+  },
+  "badgeActive": {
+    "message": "активний"
+  },
+  "titleActive": {
+    "message": "Активний акаунт"
+  },
+  "titleSwitch": {
+    "message": "Перемкнутися на $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "titleRename": {
+    "message": "Перейменувати"
+  },
+  "titleRemove": {
+    "message": "Видалити"
+  },
+  "savedOn": {
+    "message": "збережено $DATE$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "promptRename": {
+    "message": "Назва акаунта:"
+  },
+  "confirmRemove": {
+    "message": "Видалити «$NAME$»? Збережений сеанс буде втрачено.",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "okSaved": {
+    "message": "Сеанс збережено."
+  },
+  "okRefreshed": {
+    "message": "Активний акаунт оновлено."
+  },
+  "okFresh": {
+    "message": "Сеанс очищено: увійдіть з іншим акаунтом, а потім збережіть його."
+  },
+  "okSwitched": {
+    "message": "Перемкнуто на «$NAME$»",
+    "placeholders": {
+      "name": {
+        "content": "$1"
+      }
+    }
+  },
+  "warnNoSession": {
+    "message": "Немає активного сеансу claude.ai — натисніть на акаунт, щоб увійти знову."
+  },
+  "errNoSession": {
+    "message": "Немає активного сеансу claude.ai. Спочатку увійдіть на claude.ai."
+  },
+  "errNotFound": {
+    "message": "Акаунт не знайдено."
+  },
+  "errNoActive": {
+    "message": "Немає активного акаунта для оновлення."
+  },
+  "errNothingToSave": {
+    "message": "Немає активного сеансу для збереження."
+  },
+  "errUnknownAction": {
+    "message": "Невідома дія: $ACTION$",
+    "placeholders": {
+      "action": {
+        "content": "$1"
+      }
+    }
+  },
+  "errUnknown": {
+    "message": "Невідома помилка"
+  },
+  "defaultAccountName": {
+    "message": "Акаунт $N$",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "btnImport": {
+    "message": "⇩ Імпорт"
+  },
+  "btnExport": {
+    "message": "⇧ Експорт"
+  },
+  "confirmExport": {
+    "message": "Файл експорту містить ваші cookie-файли сеансу claude.ai у відкритому вигляді. Будь-хто, хто отримає файл, зможе увійти в ці акаунти, тому зберігайте його в безпеці. Продовжити?"
+  },
+  "okExported": {
+    "message": "Акаунтів експортовано: $N$.",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "okImported": {
+    "message": "Імпорт завершено — додано: $ADDED$, оновлено: $UPDATED$, пропущено: $SKIPPED$.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "updated": {
+        "content": "$2"
+      },
+      "skipped": {
+        "content": "$3"
+      }
+    }
+  },
+  "errImportInvalid": {
+    "message": "Недійсний файл: це не експорт цього розширення."
+  },
+  "errNothingToExport": {
+    "message": "Немає збережених акаунтів для експорту."
+  },
+  "titleDrag": {
+    "message": "Перетягніть, щоб змінити порядок"
+  }
+}

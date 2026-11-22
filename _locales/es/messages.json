@@ -116,5 +116,45 @@
         "content": "$1"
       }
     }
+  },
+  "btnImport": {
+    "message": "⇩ Importar"
+  },
+  "btnExport": {
+    "message": "⇧ Exportar"
+  },
+  "confirmExport": {
+    "message": "El archivo exportado contiene tus cookies de sesión de claude.ai en texto plano. Cualquiera que lo obtenga puede iniciar sesión en estas cuentas, así que mantenlo en privado. ¿Continuar?"
+  },
+  "okExported": {
+    "message": "Cuentas exportadas: $N$.",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "okImported": {
+    "message": "Importación terminada — añadidas: $ADDED$, actualizadas: $UPDATED$, omitidas: $SKIPPED$.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "updated": {
+        "content": "$2"
+      },
+      "skipped": {
+        "content": "$3"
+      }
+    }
+  },
+  "errImportInvalid": {
+    "message": "Archivo no válido: no es una exportación de esta extensión."
+  },
+  "errNothingToExport": {
+    "message": "No hay cuentas guardadas para exportar."
+  },
+  "titleDrag": {
+    "message": "Arrastra para reordenar"
   }
 }

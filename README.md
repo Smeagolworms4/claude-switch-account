@@ -52,6 +52,8 @@ Then load the folder directly with **Load unpacked**. There is no build step: pl
 | **⇥ New login** | Clears the session without deleting profiles — to add another account |
 | **↻ Refresh active account** | Re-saves the active account's cookies (handy after re-authenticating) |
 | **✎ / 🗑** | Rename / delete a profile |
+| **Drag an account** | Reorder the list; the order is saved |
+| **⇩ Import / ⇧ Export** | Export saves all accounts to a JSON file; import merges such a file into the list (a session already saved is only replaced by a newer one). On Firefox, Import opens in a tab |
 
 ### Adding a second account
 
@@ -64,7 +66,7 @@ Then load the folder directly with **Load unpacked**. There is no build step: pl
 
 UI translated through `chrome.i18n`, auto-selected from the browser language:
 
-🇬🇧 English (default) · 🇫🇷 Français · 🇩🇪 Deutsch · 🇪🇸 Español · 🇮🇹 Italiano · 🇵🇹 Português
+🇬🇧 English (default) · 🇫🇷 Français · 🇩🇪 Deutsch · 🇪🇸 Español · 🇮🇹 Italiano · 🇵🇹 Português · 🇺🇦 Українська · 🇷🇺 Русский
 
 Adding a language = copy `_locales/en/messages.json` to `_locales/<code>/messages.json`. CI enforces that every locale carries exactly the same keys.
 
@@ -106,6 +108,7 @@ The one-time setup for automated publishing is documented in
 ## Security & limitations
 
 - Session cookies are stored **in plaintext** in the extension's local storage — same as your browser's cookie jar. On a shared machine, delete the profiles before walking away.
+- An **export file contains the session cookies in plaintext** and works like a password for those accounts: keep it private and delete it once imported.
 - Only one account is active **per browser profile** at a time: this is switching, not simultaneous isolation (for that, use Chrome profiles or Firefox containers).
 - Unofficial extension, unaffiliated with Anthropic.
 - Tested on Chrome / Brave / Edge. Firefox needs a manifest variant (`background.scripts`).

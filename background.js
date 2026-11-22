@@ -275,6 +275,155 @@ async function openClaude() {
   }
 }
 
+/* ------------------------------------------------------- import / export --- */
+
+const EXPORT_FORMAT = "claude-switch-account";
+const EXPORT_VERSION = 1;
+const SAME_SITE = new Set(["no_restriction", "lax", "strict", "unspecified"]);
+
+/** Returns every saved account, with a fresh snapshot of the active one. */
+async function exportAccounts() {
+  const state = await getState();
+  if (!state.accounts.length) throw new Error(t("errNothingToExport"));
+
+  // sessionKey rotates: export the live cookies of the active account, not a stale copy.
+  const current = state.accounts.find((a) => a.id === state.activeId);
+  if (current && (await isLoggedIn())) {
+    await snapshotInto(current);
+    await setState(state);
+  }
+
+  return {
+    format: EXPORT_FORMAT,
+    version: EXPORT_VERSION,
+    exportedAt: new Date().toISOString(),
+    accounts: state.accounts
+  };
+}
+
+function isClaudeDomain(domain) {
+  const host = String(domain || "").replace(/^\./, "").toLowerCase();
+  return COOKIE_DOMAINS.some((d) => host === d || host.endsWith(`.${d}`));
+}
+
+const optString = (v) => (typeof v === "string" && v.trim() ? v.trim() : null);
+
+/** Keeps only the cookie fields we write back; returns null for anything unusable. */
+function sanitizeCookie(raw, storeIds) {
+  if (!raw || typeof raw !== "object") return null;
+  if (typeof raw.name !== "string" || !raw.name || typeof raw.value !== "string") return null;
+  if (!isClaudeDomain(raw.domain)) return null;
+  if (typeof raw.path !== "string" || !raw.path.startsWith("/")) return null;
+
+  const cookie = {
+    name: raw.name,
+    value: raw.value,
+    domain: raw.domain,
+    path: raw.path,
+    secure: raw.secure === true,
+    httpOnly: raw.httpOnly === true,
+    hostOnly: raw.hostOnly === true,
+    session: raw.session === true
+  };
+  if (SAME_SITE.has(raw.sameSite)) cookie.sameSite = raw.sameSite;
+  if (Number.isFinite(raw.expirationDate)) cookie.expirationDate = raw.expirationDate;
+  // A store id from another browser would make cookies.set fail: keep it only if it exists here.
+  if (typeof raw.storeId === "string" && storeIds.has(raw.storeId)) cookie.storeId = raw.storeId;
+  if (raw.partitionKey && typeof raw.partitionKey === "object") cookie.partitionKey = raw.partitionKey;
+  return cookie;
+}
+
+/** Validates one imported account; returns null when it cannot be used to sign in. */
+function sanitizeAccount(raw, storeIds, position) {
+  if (!raw || typeof raw !== "object" || !Array.isArray(raw.cookies)) return null;
+
+  const cookies = raw.cookies.map((c) => sanitizeCookie(c, storeIds)).filter(Boolean);
+  if (!cookies.some((c) => c.name === "sessionKey" && c.value)) return null;
+
+  const name = optString(raw.name);
+  const email = optString(raw.email);
+  return {
+    id: optString(raw.id)?.slice(0, 100) || crypto.randomUUID(),
+    label: optString(raw.label) || name || email || t("defaultAccountName", position + 1),
+    name,
+    email,
+    org: optString(raw.org),
+    color: /^#[0-9a-f]{3,8}$/i.test(raw.color || "") ? raw.color : COLORS[position % COLORS.length],
+    cookies,
+    savedAt: Number.isFinite(raw.savedAt) ? raw.savedAt : Date.now()
+  };
+}
+
+/**
+ * Merges an exported file into the saved accounts. An account that is already
+ * saved (same id or same e-mail) is only overwritten when the imported session
+ * is newer. The active account is left untouched.
+ */
+async function importAccounts(data) {
+  if (!data || data.format !== EXPORT_FORMAT || !Array.isArray(data.accounts)) {
+    throw new Error(t("errImportInvalid"));
+  }
+  if (!Number.isInteger(data.version) || data.version < 1 || data.version > EXPORT_VERSION) {
+    throw new Error(t("errImportInvalid"));
+  }
+
+  const stores = await chrome.cookies.getAllCookieStores().catch(() => []);
+  const storeIds = new Set(stores.map((s) => s.id));
+
+  const state = await getState();
+  const result = { added: 0, updated: 0, skipped: 0 };
+
+  for (const raw of data.accounts) {
+    const account = sanitizeAccount(raw, storeIds, state.accounts.length);
+    if (!account) {
+      result.skipped++;
+      continue;
+    }
+
+    const existing = state.accounts.find(
+      (a) => a.id === account.id || (account.email && a.email === account.email)
+    );
+
+    if (!existing) {
+      state.accounts.push(account);
+      result.added++;
+    } else if (account.savedAt > (existing.savedAt || 0)) {
+      Object.assign(existing, {
+        cookies: account.cookies,
+        savedAt: account.savedAt,
+        name: account.name || existing.name,
+        email: account.email || existing.email,
+        org: account.org || existing.org
+      });
+      result.updated++;
+    } else {
+      result.skipped++;
+    }
+  }
+
+  await setState(state);
+  return { ...state, importResult: result };
+}
+
+/* ---------------------------------------------------------------- reorder --- */
+
+/** Saves a new account order. Unknown ids are ignored; accounts left out keep their place at the end. */
+async function reorderAccounts(ids) {
+  if (!Array.isArray(ids)) throw new Error(t("errUnknown"));
+
+  const state = await getState();
+  const byId = new Map(state.accounts.map((a) => [a.id, a]));
+  const ordered = [];
+  for (const id of ids) {
+    const account = byId.get(id);
+    if (!account) continue;
+    ordered.push(account);
+    byId.delete(id);
+  }
+  state.accounts = [...ordered, ...byId.values()];
+  return setState(state);
+}
+
 /* ---------------------------------------------------------------- router --- */
 
 const HANDLERS = {
@@ -287,6 +436,15 @@ const HANDLERS = {
   remove: ({ id }) => removeAccount(id),
   openClaude: () => openClaude()
 };
+
+Object.assign(HANDLERS, {
+  exportAccounts: () => exportAccounts(),
+  importAccounts: ({ data }) => importAccounts(data)
+});
+
+Object.assign(HANDLERS, {
+  reorder: ({ ids }) => reorderAccounts(ids)
+});
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   const handler = HANDLERS[msg?.type];

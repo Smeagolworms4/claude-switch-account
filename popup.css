@@ -201,3 +201,24 @@ button:disabled { opacity: 0.5; cursor: default; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* Import opened in a full tab (Firefox): keep the popup layout, centred. */
+.in-tab body { margin: 24px auto; }
+
+/* --- drag to reorder --- */
+
+.grip {
+  flex: 0 0 8px;
+  height: 18px;
+  margin-left: -2px;
+  background: radial-gradient(circle, var(--muted) 1.1px, transparent 1.5px) 0 0 / 4px 6px;
+  opacity: 0.5;
+  cursor: grab;
+}
+
+.item:hover .grip { opacity: 1; }
+
+.item.dragging {
+  opacity: 0.45;
+  border-style: dashed;
+}

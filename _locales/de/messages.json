@@ -116,5 +116,45 @@
         "content": "$1"
       }
     }
+  },
+  "btnImport": {
+    "message": "⇩ Importieren"
+  },
+  "btnExport": {
+    "message": "⇧ Exportieren"
+  },
+  "confirmExport": {
+    "message": "Die Exportdatei enthält deine claude.ai-Sitzungs-Cookies im Klartext. Wer die Datei besitzt, kann sich bei diesen Konten anmelden – bewahre sie daher sicher auf. Fortfahren?"
+  },
+  "okExported": {
+    "message": "Konten exportiert: $N$.",
+    "placeholders": {
+      "n": {
+        "content": "$1"
+      }
+    }
+  },
+  "okImported": {
+    "message": "Import abgeschlossen — hinzugefügt: $ADDED$, aktualisiert: $UPDATED$, übersprungen: $SKIPPED$.",
+    "placeholders": {
+      "added": {
+        "content": "$1"
+      },
+      "updated": {
+        "content": "$2"
+      },
+      "skipped": {
+        "content": "$3"
+      }
+    }
+  },
+  "errImportInvalid": {
+    "message": "Ungültige Datei: Das ist kein Export dieser Erweiterung."
+  },
+  "errNothingToExport": {
+    "message": "Keine gespeicherten Konten zum Exportieren."
+  },
+  "titleDrag": {
+    "message": "Ziehen zum Sortieren"
   }
 }
